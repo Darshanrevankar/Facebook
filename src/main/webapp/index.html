@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Tracker Dashboard</title>
+    <style>
+        * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #000000;
+  color: #f0f0f0;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #111111 0%, #000000 100%);
+  border-right: 1px solid #333333;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-header {
+  padding: 2rem 1.5rem;
+  border-bottom: 1px solid #333333;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+}
+
+.sidebar-header h2 {
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-header i {
+  color: #00ff88;
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.3));
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 1rem 0;
+}
+
+.sidebar-nav li {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  position: relative;
+}
+
+.sidebar-nav li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: linear-gradient(90deg, #00ff88, transparent);
+  transition: width 0.3s ease;
+}
+
+.sidebar-nav li:hover::before {
+  width: 100%;
+  opacity: 0.05;
+}
+
+.sidebar-nav li:hover {
+  background: rgba(0, 255, 136, 0.08);
+  color: #00ff88;
+  transform: translateX(4px);
+}
+
+.sidebar-nav li.active {
+  background: linear-gradient(90deg, rgba(0, 255, 136, 0.15), transparent);
+  color: #00ff88;
+  border-left-color: #00ff88;
+  box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.1);
+}
+
+.sidebar-nav i {
+  width: 20px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-nav li:hover i {
+  transform: scale(1.1);
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  background: #000000;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #111111 0%, #000000 100%);
+  padding: 2rem;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.header-left h1 {
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #ffffff, #cccccc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-left p {
+  color: #999999;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box input {
+  background: #1a1a1a;
+  border: 1px solid #444444;
+  border-radius: 12px;
+  padding: 0.875rem 1rem 0.875rem 2.75rem;
+  color: #f0f0f0;
+  width: 320px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.95rem;
+  backdrop-filter: blur(10px);
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #00ff88;
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.15), 0 4px 20px rgba(0, 255, 136, 0.1);
+  background: #222222;
+}
+
+.search-box i {
+  position: absolute;
+  left: 1rem;
+  color: #999999;
+  transition: color 0.3s ease;
+}
+
+.search-box input:focus + i {
+  color: #00ff88;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #f0f0f0;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.user-profile:hover {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.user-profile i {
+  font-size: 1.5rem;
+  color: #00ff88;
+  filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.3));
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #111111 0%, #000000 100%);
+  border: 1px solid #333333;
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #00ff88, #00ccff, #ff6b6b, #feca57);
+  background-size: 300% 100%;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 136, 0.1);
+  border-color: #555555;
+}
+
+.stat-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  filter: blur(20px);
+  opacity: 0.3;
+}
+
+.stat-icon.cpu {
+  background: linear-gradient(135deg, #00ff88, #00cc70);
+  color: #000000;
+  box-shadow: 0 8px 25px rgba(0, 255, 136, 0.3);
+}
+
+.stat-icon.memory {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: #ffffff;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+.stat-icon.network {
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  color: #ffffff;
+  box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
+}
+
+.stat-icon.storage {
+  background: linear-gradient(135deg, #feca57, #ff9ff3);
+  color: #000000;
+  box-shadow: 0 8px 25px rgba(254, 202, 87, 0.3);
+}
+
+.stat-content h3 {
+  color: #999999;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.stat-change {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.stat-change.positive {
+  color: #00ff88;
+  background: rgba(0, 255, 136, 0.1);
+}
+
+.stat-change.negative {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* Charts Section */
+.charts-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  padding: 0 2rem 2rem;
+}
+
+.secondary-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mini-chart-container {
+  background: linear-gradient(135deg, #111111 0%, #000000 100%);
+  border: 1px solid #333333;
+  border-radius: 16px;
+  padding: 1.25rem;
+  height: 160px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.mini-chart-container:hover {
+  border-color: #555555;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.mini-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.mini-chart-header h4 {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.temp-value,
+.io-value {
+  color: #00ff88;
+  font-weight: 800;
+  font-size: 1rem;
+  text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+}
+
+.chart-container,
+.processes-container {
+  background: linear-gradient(135deg, #111111 0%, #000000 100%);
+  border: 1px solid #333333;
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.chart-header,
+.processes-header {
+  padding: 2rem;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+}
+
+.chart-header h3,
+.processes-header h3 {
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.chart-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chart-controls button {
+  background: #222222;
+  border: 1px solid #444444;
+  color: #999999;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.chart-controls button:hover,
+.chart-controls button.active {
+  background: #00ff88;
+  color: #000000;
+  border-color: #00ff88;
+  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+  transform: translateY(-1px);
+}
+
+.chart-content {
+  padding: 2rem;
+  height: 320px;
+}
+
+/* Logs Chart Container Styles */
+.logs-chart-container {
+  background: linear-gradient(135deg, #111111 0%, #000000 100%);
+  border: 1px solid #333333;
+  border-radius: 16px;
+  margin: 1.5rem;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.logs-chart-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #333333;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+}
+
+.logs-chart-header h4 {
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.logs-chart-container canvas {
+  padding: 1.5rem;
+  height: 200px !important;
+}
+
+.refresh-btn {
+  background: #222222;
+  border: 1px solid #444444;
+  color: #999999;
+  padding: 0.625rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.refresh-btn:hover {
+  background: #00ff88;
+  color: #000000;
+  border-color: #00ff88;
+  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+  transform: translateY(-1px);
+}
+
+.processes-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  padding: 0 2rem 2rem;
+}
+
+.process-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.sort-btn {
+  background: #222222;
+  border: 1px solid #444444;
+  color: #999999;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.sort-btn:hover,
+.sort-btn.active {
+  background: #00ff88;
+  color: #000000;
+  border-color: #00ff88;
+  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+  transform: translateY(-1px);
+}
+
+.processes-table {
+  padding: 0;
+}
+
+.process-header-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #222222;
+  border-bottom: 1px solid #444444;
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.processes-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.process-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #333333;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeIn 0.3s ease;
+}
+
+.process-item:hover {
+  background: rgba(0, 255, 136, 0.08);
+  transform: translateX(4px);
+}
+
+.process-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00ff88;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  animation: pulse 2s infinite;
+}
+
+.status-indicator.warning {
+  background: #feca57;
+  box-shadow: 0 0 10px rgba(254, 202, 87, 0.5);
+}
+
+.status-indicator.error {
+  background: #ff6b6b;
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+/* Network monitoring section */
+.network-container {
+  background: linear-gradient(135deg, #111111 0%, #000000 100%);
+  border: 1px solid #333333;
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.network-header {
+  padding: 2rem;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+}
+
+.network-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.network-status.online {
+  color: #00ff88;
+}
+
+.network-status i {
+  font-size: 0.8rem;
+  animation: pulse 2s infinite;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 136, 0.5));
+}
+
+.network-stats {
+  padding: 2rem;
+}
+
+.network-stat {
+  margin-bottom: 2rem;
+}
+
+.network-label {
+  color: #999999;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.network-value {
+  color: #ffffff;
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.network-bar {
+  height: 8px;
+  background: #222222;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.network-progress {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: networkPulse 2s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.network-progress::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.download-progress {
+  background: linear-gradient(90deg, #00ff88, #00cc70);
+  width: 75%;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+}
+
+.upload-progress {
+  background: linear-gradient(90deg, #4ecdc4, #44a08d);
+  width: 45%;
+  box-shadow: 0 0 15px rgba(78, 205, 196, 0.4);
+}
+
+.network-connections h4 {
+  color: #ffffff;
+  font-size: 1rem;
+  margin: 2rem 0 1rem 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.connection-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #333333;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.connection-item:hover {
+  background: rgba(0, 255, 136, 0.05);
+  padding-left: 0.5rem;
+}
+
+.connection-ip {
+  color: #00ff88;
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
+
+.connection-port {
+  color: #999999;
+  font-family: "JetBrains Mono", "Courier New", monospace;
+}
+
+/* Logs Section */
+.logs-section {
+  margin: 0 2rem 2rem;
+  background: linear-gradient(135deg, #111111 0%, #000000 100%);
+  border: 1px solid #333333;
+  border-radius: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.logs-header {
+  padding: 2rem;
+  border-bottom: 1px solid #333333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+}
+
+.logs-header h3 {
+  color: #ffffff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.logs-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.log-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  background: #222222;
+  border: 1px solid #444444;
+  color: #999999;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: #00ff88;
+  color: #000000;
+  border-color: #00ff88;
+  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+  transform: translateY(-1px);
+}
+
+.log-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.log-search input {
+  background: #222222;
+  border: 1px solid #444444;
+  border-radius: 8px;
+  padding: 0.5rem 1rem 0.5rem 2.25rem;
+  color: #f0f0f0;
+  width: 220px;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.log-search input:focus {
+  outline: none;
+  border-color: #00ff88;
+  box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+}
+
+.log-search i {
+  position: absolute;
+  left: 0.75rem;
+  color: #999999;
+  font-size: 0.85rem;
+}
+
+.clear-logs,
+.pause-logs,
+.export-logs {
+  background: #222222;
+  border: 1px solid #444444;
+  color: #999999;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.clear-logs:hover {
+  background: #ff6b6b;
+  color: #ffffff;
+  border-color: #ff6b6b;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.pause-logs:hover {
+  background: #feca57;
+  color: #000000;
+  border-color: #feca57;
+  box-shadow: 0 4px 15px rgba(254, 202, 87, 0.3);
+}
+
+.export-logs:hover {
+  background: #4ecdc4;
+  color: #000000;
+  border-color: #4ecdc4;
+  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+
+.logs-stats {
+  display: flex;
+  gap: 3rem;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #333333;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.log-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.log-count {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.log-type {
+  color: #999999;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.logs-container {
+  height: 320px;
+  overflow-y: auto;
+  padding: 1.5rem;
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.log-entry {
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 8px;
+  border-left: 4px solid;
+  animation: slideInLog 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.log-entry:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.log-entry.hidden {
+  display: none;
+}
+
+.log-entry.info {
+  background: rgba(0, 255, 136, 0.05);
+  border-left-color: #00ff88;
+}
+
+.log-entry.warning {
+  background: rgba(254, 202, 87, 0.05);
+  border-left-color: #feca57;
+}
+
+.log-entry.error {
+  background: rgba(255, 107, 107, 0.05);
+  border-left-color: #ff6b6b;
+}
+
+.log-entry.success {
+  background: rgba(78, 205, 196, 0.05);
+  border-left-color: #4ecdc4;
+}
+
+.log-icon {
+  width: 24px;
+  text-align: center;
+  margin-top: 0.1rem;
+  font-size: 1rem;
+}
+
+.log-entry.info .log-icon {
+  color: #00ff88;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+}
+
+.log-entry.warning .log-icon {
+  color: #feca57;
+  text-shadow: 0 0 8px rgba(254, 202, 87, 0.5);
+}
+
+.log-entry.error .log-icon {
+  color: #ff6b6b;
+  text-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
+}
+
+.log-entry.success .log-icon {
+  color: #4ecdc4;
+  text-shadow: 0 0 8px rgba(78, 205, 196, 0.5);
+}
+
+.log-content {
+  flex: 1;
+}
+
+.log-timestamp {
+  color: #999999;
+  font-weight: 600;
+  margin-right: 0.75rem;
+}
+
+.log-message {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #f0f0f0;
+  font-weight: 600;
+}
+
+.log-details {
+  font-size: 0.8rem;
+  color: #888888;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .charts-section,
+  .processes-section {
+    grid-template-columns: 1fr;
+  }
+
+  .secondary-charts {
+    flex-direction: row;
+  }
+
+  .logs-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .log-filters {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .header-right {
+    justify-content: space-between;
+  }
+
+  .search-box input {
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .charts-section {
+    padding: 0 1rem 1rem;
+  }
+
+  .logs-section {
+    margin: 0 1rem 1rem;
+  }
+
+  .secondary-charts {
+    flex-direction: column;
+  }
+
+  .process-header-row,
+  .process-item {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .process-col {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .process-col::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #888;
+  }
+
+  .logs-stats {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4a4a;
+}
+
+/* Enhanced animations */
+@keyframes networkPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes slideInLog {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-chart-line"></i> System Tracker</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</li>
+                    <li><i class="fas fa-server"></i> Servers</li>
+                    <li><i class="fas fa-microchip"></i> Processors</li>
+                    <li><i class="fas fa-memory"></i> Memory</li>
+                    <li><i class="fas fa-hdd"></i> Storage</li>
+                    <li><i class="fas fa-network-wired"></i> Network</li>
+                    <li><i class="fas fa-file-alt"></i> Logs</li>
+                    <li><i class="fas fa-cog"></i> Settings</li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>System Overview</h1>
+                    <p>Real-time system monitoring dashboard</p>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                    <div class="user-profile">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon cpu">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>CPU Usage</h3>
+                        <div class="stat-value" id="cpu-usage">45%</div>
+                        <div class="stat-change positive">+2.5%</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon memory">
+                        <i class="fas fa-memory"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Memory Usage</h3>
+                        <div class="stat-value" id="memory-usage">8.2GB</div>
+                        <div class="stat-change negative">-1.2%</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon network">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Network I/O</h3>
+                        <div class="stat-value" id="network-io">1.2GB/s</div>
+                        <div class="stat-change positive">+5.8%</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon storage">
+                        <i class="fas fa-hdd"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Disk Usage</h3>
+                        <div class="stat-value" id="disk-usage">750GB</div>
+                        <div class="stat-change positive">+0.5%</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>System Performance</h3>
+                        <div class="chart-controls">
+                            <button class="active">1H</button>
+                            <button>6H</button>
+                            <button>24H</button>
+                            <button>7D</button>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Added new CPU temperature and disk I/O charts -->
+                <div class="secondary-charts">
+                    <div class="mini-chart-container">
+                        <div class="mini-chart-header">
+                            <h4>CPU Temperature</h4>
+                            <span class="temp-value" id="cpu-temp">65°C</span>
+                        </div>
+                        <canvas id="tempChart"></canvas>
+                    </div>
+                    
+                    <div class="mini-chart-container">
+                        <div class="mini-chart-header">
+                            <h4>Disk I/O</h4>
+                            <span class="io-value" id="disk-io">2.4MB/s</span>
+                        </div>
+                        <canvas id="diskChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced processes section with more details -->
+            <section class="processes-section">
+                <div class="processes-container">
+                    <div class="processes-header">
+                        <h3>System Processes</h3>
+                        <div class="process-controls">
+                            <button class="sort-btn" data-sort="cpu">Sort by CPU</button>
+                            <button class="sort-btn" data-sort="memory">Sort by Memory</button>
+                            <button class="refresh-btn"><i class="fas fa-sync-alt"></i></button>
+                        </div>
+                    </div>
+                    <div class="processes-table">
+                        <div class="process-header-row">
+                            <div class="process-col">Process Name</div>
+                            <div class="process-col">PID</div>
+                            <div class="process-col">CPU %</div>
+                            <div class="process-col">Memory</div>
+                            <div class="process-col">Status</div>
+                        </div>
+                        <div class="processes-list" id="processesList">
+                            <!-- Processes will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Added network monitoring section -->
+                <div class="network-container">
+                    <div class="network-header">
+                        <h3>Network Activity</h3>
+                        <div class="network-status online">
+                            <i class="fas fa-circle"></i>
+                            <span>Online</span>
+                        </div>
+                    </div>
+                    <div class="network-stats">
+                        <div class="network-stat">
+                            <div class="network-label">Download</div>
+                            <div class="network-value" id="download-speed">125.4 MB/s</div>
+                            <div class="network-bar">
+                                <div class="network-progress download-progress"></div>
+                            </div>
+                        </div>
+                        <div class="network-stat">
+                            <div class="network-label">Upload</div>
+                            <div class="network-value" id="upload-speed">45.2 MB/s</div>
+                            <div class="network-bar">
+                                <div class="network-progress upload-progress"></div>
+                            </div>
+                        </div>
+                        <div class="network-connections">
+                            <h4>Active Connections</h4>
+                            <div class="connection-list" id="connectionList">
+                                <!-- Connections will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enhanced logs section with filtering and search -->
+            <section class="logs-section">
+                <div class="logs-header">
+                    <h3>Real-time System Logs</h3>
+                    <div class="logs-controls">
+                        <div class="log-filters">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="info">Info</button>
+                            <button class="filter-btn" data-filter="warning">Warning</button>
+                            <button class="filter-btn" data-filter="error">Error</button>
+                            <button class="filter-btn" data-filter="success">Success</button>
+                        </div>
+                        <div class="log-search">
+                            <input type="text" id="logSearch" placeholder="Search logs...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <button class="clear-logs">Clear</button>
+                        <button class="pause-logs" id="pauseBtn">Pause</button>
+                        <button class="export-logs">Export</button>
+                    </div>
+                </div>
+                <div class="logs-stats">
+                    <div class="log-stat">
+                        <span class="log-count" id="infoCount">0</span>
+                        <span class="log-type">Info</span>
+                    </div>
+                    <div class="log-stat">
+                        <span class="log-count" id="warningCount">0</span>
+                        <span class="log-type">Warnings</span>
+                    </div>
+                    <div class="log-stat">
+                        <span class="log-count" id="errorCount">0</span>
+                        <span class="log-type">Errors</span>
+                    </div>
+                    <div class="log-stat">
+                        <span class="log-count" id="successCount">0</span>
+                        <span class="log-type">Success</span>
+                    </div>
+                </div>
+                <div class="logs-container" id="logsContainer">
+                    <!-- Logs will be populated by JavaScript -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // System monitoring data and real-time updates
+class SystemMonitor {
+  constructor() {
+    this.isLogsRunning = true
+    this.chart = null
+    this.tempChart = null
+    this.diskChart = null
+    this.logsChart = null // Added logs chart
+    this.logCounts = { info: 0, warning: 0, error: 0, success: 0 }
+    this.currentFilter = "all"
+    this.processes = []
+    this.connections = []
+    this.logHistory = [] // Added log history for chart
+    this.initializeCharts()
+    this.startRealTimeUpdates()
+    this.startLogGeneration()
+    this.bindEvents()
+    this.generateInitialData()
+  }
+
+  initializeCharts() {
+    this.initializeMainChart()
+    this.initializeTempChart()
+    this.initializeDiskChart()
+    this.initializeLogsChart() // Added logs chart initialization
+  }
+
+  initializeLogsChart() {
+    // Add logs chart canvas to HTML if not exists
+    const logsSection = document.querySelector(".logs-section")
+    const existingChart = document.getElementById("logsChart")
+
+    if (!existingChart) {
+      const chartContainer = document.createElement("div")
+      chartContainer.className = "logs-chart-container"
+      chartContainer.innerHTML = `
+        <div class="logs-chart-header">
+          <h4>Log Activity Timeline</h4>
+        </div>
+        <canvas id="logsChart"></canvas>
+      `
+      logsSection.insertBefore(chartContainer, logsSection.querySelector(".logs-container"))
+    }
+
+    const ctx = document.getElementById("logsChart").getContext("2d")
+
+    // Initialize log history with zeros
+    this.logHistory = Array(20)
+      .fill()
+      .map(() => ({
+        info: 0,
+        warning: 0,
+        error: 0,
+        success: 0,
+      }))
+
+    this.logsChart = new window.Chart(ctx, {
+      type: "line",
+      data: {
+        labels: this.generateLogTimeLabels(),
+        datasets: [
+          {
+            label: "Info",
+            data: this.logHistory.map((h) => h.info),
+            borderColor: "#00ff88",
+            backgroundColor: "rgba(0, 255, 136, 0.1)",
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Warning",
+            data: this.logHistory.map((h) => h.warning),
+            borderColor: "#feca57",
+            backgroundColor: "rgba(254, 202, 87, 0.1)",
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Error",
+            data: this.logHistory.map((h) => h.error),
+            borderColor: "#ff6b6b",
+            backgroundColor: "rgba(255, 107, 107, 0.1)",
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Success",
+            data: this.logHistory.map((h) => h.success),
+            borderColor: "#4ecdc4",
+            backgroundColor: "rgba(78, 205, 196, 0.1)",
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 3,
+            pointHoverRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 1000,
+          easing: "easeInOutQuart",
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: "#e0e0e0",
+              usePointStyle: true,
+              padding: 15,
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: "#888",
+              maxTicksLimit: 10,
+            },
+            grid: {
+              color: "#2a2a2a",
+            },
+          },
+          y: {
+            ticks: {
+              color: "#888",
+            },
+            grid: {
+              color: "#2a2a2a",
+            },
+            beginAtZero: true,
+          },
+        },
+      },
+    })
+  }
+
+  generateLogTimeLabels() {
+    const labels = []
+    const now = new Date()
+    for (let i = 19; i >= 0; i--) {
+      const time = new Date(now.getTime() - i * 30000) // 30 second intervals
+      labels.push(
+        time.toLocaleTimeString("en-US", {
+          hour12: false,
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+      )
+    }
+    return labels
+  }
+
+  updateLogsChart() {
+    if (this.logsChart) {
+      // Shift the time labels
+      this.logsChart.data.labels.shift()
+      this.logsChart.data.labels.push(
+        new Date().toLocaleTimeString("en-US", {
+          hour12: false,
+          minute: "2-digit",
+          second: "2-digit",
+        }),
+      )
+
+      // Update datasets with current log counts
+      const currentCounts = { ...this.logCounts }
+      this.logHistory.shift()
+      this.logHistory.push(currentCounts)
+
+      this.logsChart.data.datasets.forEach((dataset, index) => {
+        const types = ["info", "warning", "error", "success"]
+        dataset.data = this.logHistory.map((h) => h[types[index]])
+      })
+
+      this.logsChart.update("active")
+    }
+  }
+
+  initializeMainChart() {
+    const ctx = document.getElementById("performanceChart").getContext("2d")
+
+    this.chart = new window.Chart(ctx, {
+      type: "line",
+      data: {
+        labels: this.generateTimeLabels(),
+        datasets: [
+          {
+            label: "CPU Usage",
+            data: this.generateRandomData(),
+            borderColor: "#00ff88",
+            backgroundColor: "rgba(0, 255, 136, 0.1)",
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Memory Usage",
+            data: this.generateRandomData(),
+            borderColor: "#ff6b6b",
+            backgroundColor: "rgba(255, 107, 107, 0.1)",
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+          },
+          {
+            label: "Network I/O",
+            data: this.generateRandomData(),
+            borderColor: "#4ecdc4",
+            backgroundColor: "rgba(78, 205, 196, 0.1)",
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 1000,
+          easing: "easeInOutQuart",
+        },
+        plugins: {
+          legend: {
+            labels: {
+              color: "#e0e0e0",
+              usePointStyle: true,
+              padding: 20,
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: "#888",
+            },
+            grid: {
+              color: "#2a2a2a",
+            },
+          },
+          y: {
+            ticks: {
+              color: "#888",
+            },
+            grid: {
+              color: "#2a2a2a",
+            },
+            beginAtZero: true,
+            max: 100,
+          },
+        },
+      },
+    })
+  }
+
+  initializeTempChart() {
+    const ctx = document.getElementById("tempChart").getContext("2d")
+
+    this.tempChart = new window.Chart(ctx, {
+      type: "line",
+      data: {
+        labels: this.generateMiniTimeLabels(),
+        datasets: [
+          {
+            data: this.generateTempData(),
+            borderColor: "#feca57",
+            backgroundColor: "rgba(254, 202, 87, 0.2)",
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { display: false },
+          y: { display: false, min: 40, max: 90 },
+        },
+        animation: { duration: 800 },
+      },
+    })
+  }
+
+  initializeDiskChart() {
+    const ctx = document.getElementById("diskChart").getContext("2d")
+
+    this.diskChart = new window.Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: this.generateMiniTimeLabels(),
+        datasets: [
+          {
+            data: this.generateDiskData(),
+            backgroundColor: "#4ecdc4",
+            borderRadius: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { display: false },
+          y: { display: false, beginAtZero: true },
+        },
+        animation: { duration: 800 },
+      },
+    })
+  }
+
+  generateMiniTimeLabels() {
+    const labels = []
+    for (let i = 9; i >= 0; i--) {
+      labels.push(`-${i}m`)
+    }
+    return labels
+  }
+
+  generateTempData() {
+    return Array.from({ length: 10 }, () => 50 + Math.random() * 30)
+  }
+
+  generateDiskData() {
+    return Array.from({ length: 10 }, () => Math.random() * 10)
+  }
+
+  updateSystemStats() {
+    // CPU Usage with animation
+    const cpuUsage = Math.floor(Math.random() * 100)
+    const cpuElement = document.getElementById("cpu-usage")
+    this.animateValue(cpuElement, Number.parseInt(cpuElement.textContent), cpuUsage, "%")
+
+    // Memory Usage
+    const memoryUsage = (Math.random() * 16).toFixed(1)
+    const memoryElement = document.getElementById("memory-usage")
+    this.animateValue(memoryElement, Number.parseFloat(memoryElement.textContent), Number.parseFloat(memoryUsage), "GB")
+
+    // Network I/O
+    const networkIO = (Math.random() * 5).toFixed(1)
+    document.getElementById("network-io").textContent = `${networkIO}GB/s`
+
+    // Disk Usage
+    const diskUsage = Math.floor(500 + Math.random() * 500)
+    document.getElementById("disk-usage").textContent = `${diskUsage}GB`
+
+    // Update temperature
+    const temp = Math.floor(50 + Math.random() * 30)
+    document.getElementById("cpu-temp").textContent = `${temp}°C`
+
+    // Update disk I/O
+    const diskIO = (Math.random() * 10).toFixed(1)
+    document.getElementById("disk-io").textContent = `${diskIO}MB/s`
+
+    // Update network speeds
+    const downloadSpeed = (Math.random() * 200).toFixed(1)
+    const uploadSpeed = (Math.random() * 100).toFixed(1)
+    document.getElementById("download-speed").textContent = `${downloadSpeed} MB/s`
+    document.getElementById("upload-speed").textContent = `${uploadSpeed} MB/s`
+
+    // Update network progress bars
+    document.querySelector(".download-progress").style.width = `${Math.min(100, downloadSpeed / 2)}%`
+    document.querySelector(".upload-progress").style.width = `${Math.min(100, uploadSpeed)}%`
+  }
+
+  animateValue(element, start, end, suffix = "") {
+    const duration = 1000
+    const startTime = performance.now()
+
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const current = start + (end - start) * progress
+
+      element.textContent = `${Math.round(current)}${suffix}`
+
+      if (progress < 1) {
+        requestAnimationFrame(animate)
+      }
+    }
+
+    requestAnimationFrame(animate)
+  }
+
+  updateChart() {
+    if (this.chart) {
+      // Update main chart
+      this.chart.data.labels.shift()
+      this.chart.data.labels.push(
+        new Date().toLocaleTimeString("en-US", {
+          hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      )
+
+      this.chart.data.datasets.forEach((dataset) => {
+        dataset.data.shift()
+        dataset.data.push(Math.floor(Math.random() * 100))
+      })
+
+      this.chart.update("active")
+    }
+
+    // Update temperature chart
+    if (this.tempChart) {
+      this.tempChart.data.datasets[0].data.shift()
+      this.tempChart.data.datasets[0].data.push(50 + Math.random() * 30)
+      this.tempChart.update("active")
+    }
+
+    // Update disk chart
+    if (this.diskChart) {
+      this.diskChart.data.datasets[0].data.shift()
+      this.diskChart.data.datasets[0].data.push(Math.random() * 10)
+      this.diskChart.update("active")
+    }
+
+    this.updateLogsChart()
+  }
+
+  generateLog() {
+    if (!this.isLogsRunning) return
+
+    const logTypes = ["info", "warning", "error", "success"]
+    const logMessages = {
+      info: [
+        { msg: "System health check completed successfully", details: "All services operational" },
+        { msg: "Database connection pool refreshed", details: "Connection count: 25/50" },
+        { msg: "User session authenticated", details: "User ID: admin@system.local" },
+        { msg: "Cache optimization completed", details: "Memory freed: 2.4GB" },
+        { msg: "Scheduled backup initiated", details: "Target: /backup/daily/" },
+        { msg: "Service restart completed", details: "nginx reloaded successfully" },
+        { msg: "SSL certificate validation passed", details: "Valid until: 2025-12-31" },
+        { msg: "Log rotation completed", details: "Archived 15 log files" },
+      ],
+      warning: [
+        { msg: "High CPU usage detected", details: "CPU: 85% on core-2" },
+        { msg: "Memory usage approaching threshold", details: "RAM: 14.2GB/16GB used" },
+        { msg: "Disk space running low", details: "/var/log: 92% full" },
+        { msg: "Network latency increased", details: "Avg response: 250ms" },
+        { msg: "SSL certificate expires soon", details: "Expires in 30 days" },
+        { msg: "Unusual traffic pattern detected", details: "Requests: +340% from baseline" },
+        { msg: "Database query performance degraded", details: "Avg query time: 2.3s" },
+        { msg: "Failed login attempts detected", details: "5 attempts from 192.168.1.100" },
+      ],
+      error: [
+        { msg: "Database connection failed", details: "Connection timeout after 30s" },
+        { msg: "Authentication service unavailable", details: "Service returned HTTP 503" },
+        { msg: "Critical error in payment processing", details: "Transaction ID: TXN-2024-001" },
+        { msg: "File system corruption detected", details: "Sector errors on /dev/sda1" },
+        { msg: "Network timeout on external API", details: "api.external.com unreachable" },
+        { msg: "Service crashed and restarted", details: "Process ID: 1234 terminated" },
+        { msg: "Security breach attempt blocked", details: "IP: 203.0.113.1 blocked" },
+        { msg: "Data synchronization failed", details: "Sync error: checksum mismatch" },
+      ],
+      success: [
+        { msg: "Deployment completed successfully", details: "Version 2.1.4 deployed" },
+        { msg: "Security scan passed all checks", details: "0 vulnerabilities found" },
+        { msg: "Performance optimization applied", details: "Response time improved by 25%" },
+        { msg: "Data synchronization completed", details: "1.2GB synchronized" },
+        { msg: "System update installed", details: "Kernel updated to 5.15.0" },
+        { msg: "Monitoring alerts configured", details: "15 new alert rules active" },
+        { msg: "Backup verification successful", details: "All files verified intact" },
+        { msg: "Load balancer health check passed", details: "All nodes responding" },
+      ],
+    }
+
+    const type = logTypes[Math.floor(Math.random() * logTypes.length)]
+    const messages = logMessages[type]
+    const logData = messages[Math.floor(Math.random() * messages.length)]
+    const timestamp = new Date().toLocaleTimeString()
+
+    // Update log counts
+    this.logCounts[type]++
+    document.getElementById(`${type}Count`).textContent = this.logCounts[type]
+
+    const logEntry = document.createElement("div")
+    logEntry.className = `log-entry ${type}`
+    logEntry.innerHTML = `
+      <div class="log-icon">
+        <i class="fas ${this.getLogIcon(type)}"></i>
+      </div>
+      <div class="log-content">
+        <span class="log-timestamp">[${timestamp}]</span>
+        <span class="log-message">${logData.msg}</span>
+        <div class="log-details">${logData.details}</div>
+      </div>
+    `
+
+    const logsContainer = document.getElementById("logsContainer")
+    logsContainer.appendChild(logEntry)
+
+    // Apply current filter
+    if (this.currentFilter !== "all" && this.currentFilter !== type) {
+      logEntry.classList.add("hidden")
+    }
+
+    // Keep only last 100 logs
+    while (logsContainer.children.length > 100) {
+      logsContainer.removeChild(logsContainer.firstChild)
+    }
+
+    // Auto-scroll to bottom if user is at bottom
+    if (logsContainer.scrollTop + logsContainer.clientHeight >= logsContainer.scrollHeight - 50) {
+      logsContainer.scrollTop = logsContainer.scrollHeight
+    }
+  }
+
+  getLogIcon(type) {
+    const icons = {
+      info: "fa-info-circle",
+      warning: "fa-exclamation-triangle",
+      error: "fa-times-circle",
+      success: "fa-check-circle",
+    }
+    return icons[type] || "fa-circle"
+  }
+
+  generateInitialData() {
+    this.updateProcesses()
+    this.updateConnections()
+  }
+
+  updateProcesses() {
+    const processNames = [
+      "chrome.exe",
+      "firefox.exe",
+      "node.js",
+      "python.exe",
+      "system",
+      "explorer.exe",
+      "svchost.exe",
+      "nginx.exe",
+      "mysql.exe",
+      "redis-server",
+    ]
+
+    this.processes = processNames.map((name, index) => ({
+      name,
+      pid: 1000 + Math.floor(Math.random() * 9000),
+      cpu: Math.random() * 25,
+      memory: Math.random() * 4,
+      status: Math.random() > 0.1 ? "running" : Math.random() > 0.5 ? "warning" : "error",
+    }))
+
+    this.renderProcesses()
+  }
+
+  renderProcesses() {
+    const processList = document.getElementById("processesList")
+    processList.innerHTML = ""
+
+    this.processes.forEach((process) => {
+      const processItem = document.createElement("div")
+      processItem.className = "process-item"
+      processItem.innerHTML = `
+        <div class="process-col" data-label="Process:">${process.name}</div>
+        <div class="process-col" data-label="PID:">${process.pid}</div>
+        <div class="process-col" data-label="CPU:">${process.cpu.toFixed(1)}%</div>
+        <div class="process-col" data-label="Memory:">${process.memory.toFixed(1)}GB</div>
+        <div class="process-col" data-label="Status:">
+          <div class="process-status">
+            <div class="status-indicator ${process.status}"></div>
+            <span>${process.status}</span>
+          </div>
+        </div>
+      `
+      processList.appendChild(processItem)
+    })
+  }
+
+  updateConnections() {
+    const ips = ["192.168.1.100", "10.0.0.15", "172.16.0.5", "203.0.113.1", "198.51.100.2"]
+    const ports = [80, 443, 22, 3306, 6379, 8080, 9000]
+
+    this.connections = Array.from({ length: 5 }, () => ({
+      ip: ips[Math.floor(Math.random() * ips.length)],
+      port: ports[Math.floor(Math.random() * ports.length)],
+    }))
+
+    this.renderConnections()
+  }
+
+  renderConnections() {
+    const connectionList = document.getElementById("connectionList")
+    connectionList.innerHTML = ""
+
+    this.connections.forEach((conn) => {
+      const connItem = document.createElement("div")
+      connItem.className = "connection-item"
+      connItem.innerHTML = `
+        <span class="connection-ip">${conn.ip}</span>
+        <span class="connection-port">:${conn.port}</span>
+      `
+      connectionList.appendChild(connItem)
+    })
+  }
+
+  startRealTimeUpdates() {
+    // Update stats every 2 seconds
+    setInterval(() => this.updateSystemStats(), 2000)
+
+    // Update charts every 3 seconds
+    setInterval(() => this.updateChart(), 3000)
+
+    // Update processes every 8 seconds
+    setInterval(() => this.updateProcesses(), 8000)
+
+    // Update connections every 12 seconds
+    setInterval(() => this.updateConnections(), 12000)
+
+    setInterval(() => this.updateLogsChart(), 30000)
+  }
+
+  startLogGeneration() {
+    const generateNextLog = () => {
+      this.generateLog()
+      // Random interval between 1-4 seconds
+      const nextInterval = 1000 + Math.random() * 3000
+      setTimeout(generateNextLog, nextInterval)
+    }
+    generateNextLog()
+  }
+
+  bindEvents() {
+    // Existing events
+    const pauseBtn = document.getElementById("pauseBtn")
+    pauseBtn.addEventListener("click", () => {
+      this.isLogsRunning = !this.isLogsRunning
+      pauseBtn.textContent = this.isLogsRunning ? "Pause" : "Resume"
+    })
+
+    document.querySelector(".clear-logs").addEventListener("click", () => {
+      document.getElementById("logsContainer").innerHTML = ""
+      this.logCounts = { info: 0, warning: 0, error: 0, success: 0 }
+      Object.keys(this.logCounts).forEach((type) => {
+        document.getElementById(`${type}Count`).textContent = "0"
+      })
+    })
+
+    document.querySelector(".refresh-btn").addEventListener("click", () => {
+      this.updateProcesses()
+    })
+
+    // Chart controls
+    document.querySelectorAll(".chart-controls button").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        document.querySelectorAll(".chart-controls button").forEach((b) => b.classList.remove("active"))
+        e.target.classList.add("active")
+      })
+    })
+
+    // Log filters
+    document.querySelectorAll(".filter-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        document.querySelectorAll(".filter-btn").forEach((b) => b.classList.remove("active"))
+        e.target.classList.add("active")
+        this.currentFilter = e.target.dataset.filter
+        this.filterLogs()
+      })
+    })
+
+    // Log search
+    document.getElementById("logSearch").addEventListener("input", (e) => {
+      this.searchLogs(e.target.value)
+    })
+
+    // Process sorting
+    document.querySelectorAll(".sort-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        document.querySelectorAll(".sort-btn").forEach((b) => b.classList.remove("active"))
+        e.target.classList.add("active")
+        this.sortProcesses(e.target.dataset.sort)
+      })
+    })
+
+    // Export logs
+    document.querySelector(".export-logs").addEventListener("click", () => {
+      this.exportLogs()
+    })
+  }
+
+  filterLogs() {
+    const logs = document.querySelectorAll(".log-entry")
+    logs.forEach((log) => {
+      if (this.currentFilter === "all") {
+        log.classList.remove("hidden")
+      } else {
+        if (log.classList.contains(this.currentFilter)) {
+          log.classList.remove("hidden")
+        } else {
+          log.classList.add("hidden")
+        }
+      }
+    })
+  }
+
+  searchLogs(query) {
+    const logs = document.querySelectorAll(".log-entry:not(.hidden)")
+    logs.forEach((log) => {
+      const message = log.querySelector(".log-message").textContent.toLowerCase()
+      const details = log.querySelector(".log-details").textContent.toLowerCase()
+
+      if (query === "" || message.includes(query.toLowerCase()) || details.includes(query.toLowerCase())) {
+        log.style.display = "flex"
+      } else {
+        log.style.display = "none"
+      }
+    })
+  }
+
+  sortProcesses(sortBy) {
+    this.processes.sort((a, b) => {
+      if (sortBy === "cpu") return b.cpu - a.cpu
+      if (sortBy === "memory") return b.memory - a.memory
+      return a.name.localeCompare(b.name)
+    })
+    this.renderProcesses()
+  }
+
+  exportLogs() {
+    const logs = document.querySelectorAll(".log-entry:not(.hidden)")
+    let logData = "Timestamp,Type,Message,Details\n"
+
+    logs.forEach((log) => {
+      const timestamp = log.querySelector(".log-timestamp").textContent
+      const type = log.className.split(" ")[1]
+      const message = log.querySelector(".log-message").textContent
+      const details = log.querySelector(".log-details").textContent
+      logData += `"${timestamp}","${type}","${message}","${details}"\n`
+    })
+
+    const blob = new Blob([logData], { type: "text/csv" })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `system-logs-${new Date().toISOString().split("T")[0]}.csv`
+    a.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  // Generate time labels for chart
+  generateTimeLabels() {
+    const labels = []
+    const now = new Date()
+    for (let i = 11; i >= 0; i--) {
+      const time = new Date(now.getTime() - i * 5 * 60000)
+      labels.push(
+        time.toLocaleTimeString("en-US", {
+          hour12: false,
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      )
+    }
+    return labels
+  }
+
+  // Generate random data for chart
+  generateRandomData() {
+    return Array.from({ length: 12 }, () => Math.floor(Math.random() * 100))
+  }
+}
+
+// Initialize the system monitor when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  new SystemMonitor()
+})
+
+    </script>
+</body>
+</html>
